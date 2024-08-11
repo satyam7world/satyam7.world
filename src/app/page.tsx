@@ -1,24 +1,24 @@
 "use client";
 
-import {Canvas, useFrame} from "@react-three/fiber";
-import {OrbitControls, useGLTF, Html} from "@react-three/drei";
-import {Suspense, useEffect, useRef, useState} from "react";
-import {Mesh, Vector3} from "three";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, useGLTF, Html, Sky } from "@react-three/drei";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { Mesh, Vector3 } from "three";
 
 function Floor() {
     return (
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
-            <planeGeometry args={[100, 100]}/>
-            <meshStandardMaterial color="green"/>
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -20, 0]}>
+            <planeGeometry args={[1000, 1000]} />
+            <meshStandardMaterial color="green" />
         </mesh>
     );
 }
 
-function Banner({position, onClick}) {
+function Banner({ position, onClick }) {
     return (
         <mesh position={position} onClick={onClick}>
-            <planeGeometry args={[2, 1]}/>
-            <meshStandardMaterial color="white"/>
+            <planeGeometry args={[2, 1]} />
+            <meshStandardMaterial color="white" />
             <Html position={[0, 0, 0.01]} center>
                 <div style={{
                     textAlign: "center",
@@ -29,9 +29,9 @@ function Banner({position, onClick}) {
                     width: "300px"
                 }}>
                     <h1>Welcome to Satyam7.world</h1>
-                    <a href="https://github.com/satyam7world" target="_blank" rel="noopener noreferrer">GitHub</a><br/>
+                    <a href="https://github.com/satyam7world" target="_blank" rel="noopener noreferrer">GitHub</a><br />
                     <a href="https://www.linkedin.com/in/satyam7world/" target="_blank"
-                       rel="noopener noreferrer">LinkedIn</a><br/>
+                       rel="noopener noreferrer">LinkedIn</a><br />
                     <a href="mailto:connect@satyam7.world">Email</a>
                 </div>
             </Html>
@@ -40,7 +40,7 @@ function Banner({position, onClick}) {
 }
 
 function Model() {
-    const {scene} = useGLTF("./Heli_bell.glb");
+    const { scene } = useGLTF("./Heli_bell.glb");
     const bladeRef = useRef<Mesh | null>(null);
     const [hoverPosition, setHoverPosition] = useState(new Vector3(0, 1, 0));
     const [hoverDirection, setHoverDirection] = useState(1);
@@ -75,27 +75,28 @@ function Model() {
     });
 
     return (
-        <primitive object={scene} position={hoverPosition}/>
+        <primitive object={scene} position={hoverPosition} />
     );
 }
 
 export default function Home() {
     const handleBannerClick = () => {
-        console.log('banner clicked ')
-        // alert("Banner clicked! Implement camera zoom or redirection here.");
+        console.log('banner clicked ');
+        // Implement camera zoom or redirection here
     };
 
     return (
-        <div style={{width: "100vw", height: "100vh"}}>
-            <Canvas camera={{position: [0, 2, 8], fov: 60}}>
-                <ambientLight/>
-                <pointLight position={[10, 10, 10]}/>
+        <div style={{ width: "100vw", height: "100vh" }}>
+            <Canvas camera={{ position: [0, 2, 8], fov: 60 }}>
+                <Sky sunPosition={[100, 10, 100]} />
+                <ambientLight />
+                <pointLight position={[10, 10, 10]} />
                 <Suspense fallback={null}>
-                    <Model/>
-                    <Banner position={[0, 1, -2]} onClick={handleBannerClick}/>
+                    <Model />
+                    <Banner position={[0, 1, -2]} onClick={handleBannerClick} />
                 </Suspense>
-                <Floor/>
-                <OrbitControls/>
+                <Floor />
+                <OrbitControls />
             </Canvas>
         </div>
     );
