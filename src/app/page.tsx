@@ -14,7 +14,8 @@ function Floor() {
     );
 }
 
-function Banner({isVisible}) {
+function Banner({ isVisible }: { isVisible: boolean }) {
+
     return (
         <Html center style={{display: isVisible ? "block" : "none"}}>
             <div style={{
