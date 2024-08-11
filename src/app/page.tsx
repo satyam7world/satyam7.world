@@ -3,7 +3,7 @@
 import {Canvas, useFrame} from "@react-three/fiber";
 
 import {OrbitControls, useGLTF} from "@react-three/drei";
-import {Suspense, useRef} from "react";
+import {Suspense, useEffect, useRef} from "react";
 import {DoubleSide, Mesh,} from "three";
 
 function RotatingCube() {
@@ -34,11 +34,30 @@ function Floor() {
 }
 
 function Model() {
-    const {scene} = useGLTF('./Heli_bell.glb');
-    return <primitive
-        position={[0,0,0]}
+    const {scene} = useGLTF("./Heli_bell.glb");
+    const bladeRef = useRef<Mesh | null>(null);
 
-        object={scene}/>;
+    useEffect(() => {
+        // Find the blade object by name or index
+        const bladeObject = scene.children.find((child) => {
+            console.log('child name ', child.name)
+            return child.name === "baling_baling_1"
+        });
+
+        if (bladeObject) {
+            bladeRef.current = bladeObject as Mesh;
+        }
+    }, [scene]);
+
+    useFrame(() => {
+        if (bladeRef.current) {
+            bladeRef.current.rotation.y += 0.1;
+        }
+    });
+
+    return (
+        <primitive object={scene} position={[0, 10, 0]}/>
+    );
 }
 
 
