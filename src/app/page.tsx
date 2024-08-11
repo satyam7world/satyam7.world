@@ -111,7 +111,7 @@ export default function Home() {
                     right: "20px",
                     padding: "10px 20px",
                     fontSize: "16px",
-                    borderRadius: "50%",
+                    borderRadius: "10%",
                     backgroundColor: "#007bff",
                     color: "white",
                     border: "none",
