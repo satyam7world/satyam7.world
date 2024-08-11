@@ -1,34 +1,40 @@
 "use client";
 
 import {Canvas, useFrame} from "@react-three/fiber";
-
-import {OrbitControls, useGLTF} from "@react-three/drei";
-import {Suspense, useEffect, useRef} from "react";
-import {DoubleSide, Mesh,} from "three";
-
-function RotatingCube() {
-    const meshRef = useRef<Mesh>(null);
-
-    useFrame(() => {
-        if (meshRef.current) {
-            meshRef.current.rotation.x += 0.01;
-            meshRef.current.rotation.y += 0.01;
-        }
-    });
-
-    return (
-        <mesh ref={meshRef}>
-            <boxGeometry args={[1, 1, 1]}/>
-            <meshStandardMaterial color="black"/>
-        </mesh>
-    );
-}
+import {OrbitControls, useGLTF, Html} from "@react-three/drei";
+import {Suspense, useEffect, useRef, useState} from "react";
+import {Mesh, Vector3} from "three";
 
 function Floor() {
     return (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]}>
             <planeGeometry args={[100, 100]}/>
-            <meshStandardMaterial color="green" side={DoubleSide}/>
+            <meshStandardMaterial color="green"/>
+        </mesh>
+    );
+}
+
+function Banner({position, onClick}) {
+    return (
+        <mesh position={position} onClick={onClick}>
+            <planeGeometry args={[2, 1]}/>
+            <meshStandardMaterial color="white"/>
+            <Html position={[0, 0, 0.01]} center>
+                <div style={{
+                    textAlign: "center",
+                    padding: "20px",
+                    fontSize: "24px",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    borderRadius: "10px",
+                    width: "300px"
+                }}>
+                    <h1>Welcome to Satyam7.world</h1>
+                    <a href="https://github.com/satyam7world" target="_blank" rel="noopener noreferrer">GitHub</a><br/>
+                    <a href="https://www.linkedin.com/in/satyam7world/" target="_blank"
+                       rel="noopener noreferrer">LinkedIn</a><br/>
+                    <a href="mailto:connect@satyam7.world">Email</a>
+                </div>
+            </Html>
         </mesh>
     );
 }
@@ -36,39 +42,57 @@ function Floor() {
 function Model() {
     const {scene} = useGLTF("./Heli_bell.glb");
     const bladeRef = useRef<Mesh | null>(null);
+    const [hoverPosition, setHoverPosition] = useState(new Vector3(0, 1, 0));
+    const [hoverDirection, setHoverDirection] = useState(1);
 
     useEffect(() => {
-        // Find the blade object by name or index
-        const bladeObject = scene.children.find((child) => {
-            console.log('child name ', child.name)
-            return child.name === "baling_baling_1"
-        });
-
+        const bladeObject = scene.children.find((child) => child.name === "baling_baling_1");
         if (bladeObject) {
             bladeRef.current = bladeObject as Mesh;
         }
     }, [scene]);
 
-    useFrame(() => {
+    useFrame((state) => {
+        // Rotate the blades
         if (bladeRef.current) {
-            bladeRef.current.rotation.y += 0.1;
+            bladeRef.current.rotation.y += 0.3;
         }
+
+        // Hover the helicopter
+        setHoverPosition((prev) => {
+            const newPos = prev.clone();
+            newPos.y += 0.005 * hoverDirection;
+            if (newPos.y > 1.2 || newPos.y < 0.8) {
+                setHoverDirection(-hoverDirection); // Reverse direction when reaching limits
+            }
+            scene.position.copy(newPos);
+            return newPos;
+        });
+
+        // Slight rotation for realistic hovering effect
+        scene.rotation.x = Math.sin(state.clock.getElapsedTime()) * 0.05;
+        scene.rotation.z = Math.sin(state.clock.getElapsedTime()) * 0.05;
     });
 
     return (
-        <primitive object={scene} position={[0, 10, 0]}/>
+        <primitive object={scene} position={hoverPosition}/>
     );
 }
 
-
 export default function Home() {
+    const handleBannerClick = () => {
+        console.log('banner clicked ')
+        // alert("Banner clicked! Implement camera zoom or redirection here.");
+    };
+
     return (
         <div style={{width: "100vw", height: "100vh"}}>
-            <Canvas camera={{position: [0, 2, 5], fov: 60}}>
+            <Canvas camera={{position: [0, 2, 8], fov: 60}}>
                 <ambientLight/>
-                <pointLight position={[10, 10, 100]}/>
+                <pointLight position={[10, 10, 10]}/>
                 <Suspense fallback={null}>
                     <Model/>
+                    <Banner position={[0, 1, -2]} onClick={handleBannerClick}/>
                 </Suspense>
                 <Floor/>
                 <OrbitControls/>
