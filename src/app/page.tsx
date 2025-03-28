@@ -4,7 +4,7 @@ import {Canvas, useFrame} from "@react-three/fiber";
 import {OrbitControls, useGLTF, Html, Sky} from "@react-three/drei";
 import {Suspense, useEffect, useRef, useState} from "react";
 import {Mesh, Vector3} from "three";
-
+import Head from "next/head";
 function Floor() {
     return (
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -20, 0]}>
@@ -89,6 +89,9 @@ export default function Home() {
 
     return (
         <div style={{width: "100vw", height: "100vh"}}>
+            <Head>
+                <script src="https://analytics.ahrefs.com/analytics.js" data-key="dGYUHrTPT+3z/+2j+aEhtw" async></script>
+            </Head>
             <Canvas camera={{position: [5, 5, 10], fov: 60}}>
                 <Sky sunPosition={[100, 10, 100]}/>
                 <ambientLight/>
